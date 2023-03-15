@@ -3,6 +3,16 @@
 from flask_sqlalchemy import SQLAlchemy
 db = SQLAlchemy()
 
+DEFAULT_IMAGE_URL = "http://joelburton.com/joel-burton.jpg"
+
+def connect_db(app):
+    """Connect to database."""
+
+    app.app_context().push()
+    db.app = app
+    db.init_app(app)
+
+
 class User(db.Model):
     """Class to contain user info"""
 
@@ -25,8 +35,9 @@ class User(db.Model):
     )
 
     image_url = db.Column(
-        db.String(100)
-        nullable = True
+        db.String(100),
+        nullable = True,
+        default = DEFAULT_IMAGE_URL
     )
 
     @classmethod
