@@ -7,13 +7,13 @@
 <h1>Users</h1>
 
 <ul>
-  {% for user of users %}
+  {% for user in users %}
   <a href="/users/{{ user.id }}">
     <li>{{ user.first_name }} {{ user.last_name }}</li>
   </a>
   {% endfor %}
 </ul>
 
-<button>Add user</button>
+<a href="/users/new"><button>Add user</button></a>
 
 {% endblock %}
