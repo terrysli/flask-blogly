@@ -33,7 +33,7 @@ class User(db.Model):
         db.String(50),
         nullable = False
     )
-
+#consider making this nullabe =false
     image_url = db.Column(
         db.String(100),
         nullable = True,
