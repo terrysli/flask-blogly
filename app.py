@@ -5,6 +5,7 @@ import os
 from flask import Flask, redirect, render_template, request
 from flask_debugtoolbar import DebugToolbarExtension
 from models import db, connect_db, User
+from sqlalchemy import update
 
 
 
@@ -77,9 +78,46 @@ def show_user_detail(user_id):
         user_id=user_id)
 
 
-# @app.post("/users/<user_id>/edit")
-# def handle_edit_user():
+@app.get("/users/<int:user_id>/edit")
+def show_edit_user(user_id):
+    """Show page with user edit"""
+
+    user = db.session.query(User).get(user_id)
+
+    first_name = user.first_name
+    last_name = user.last_name
+    image_url = user.image_url
+
+    return render_template(
+        "edit_user.html",
+        first_name=first_name,
+        last_name=last_name,
+        image_url=image_url,
+        user_id=user_id)
 
 
-# @app.post("/users/<user_id>/delete")
-# def delete_user():
+@app.post("/users/<int:user_id>/edit")
+def edit_user(user_id):
+    """Process edit user details"""
+
+    user = db.session.query(User).get(user_id)
+
+    user.first_name = request.form['first-name-input']
+    user.last_name = request.form['last-name-input']
+    user.image_url = request.form['image-url-input']
+
+    db.session.commit()
+
+    return redirect('/users')
+
+@app.post("/users/<int:user_id>/delete")
+def delete_user(user_id):
+    """Delete user"""
+
+    db.session.query(User).filter_by(id=user_id).delete()
+    db.session.commit()
+
+    return redirect('/users')
+
+
+

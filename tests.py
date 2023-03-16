@@ -53,6 +53,7 @@ class UserViewTestCase(TestCase):
         """Clean up any fouled transaction."""
         db.session.rollback()
 
+
     def test_list_users(self):
         """Test page showing list of users"""
 
@@ -63,6 +64,7 @@ class UserViewTestCase(TestCase):
             self.assertIn("test1_first", html)
             self.assertIn("test1_last", html)
 
+
     def test_new_user_page(self):
         """Test new user page is displayed"""
 
@@ -71,6 +73,7 @@ class UserViewTestCase(TestCase):
             self.assertEqual(resp.status_code, 200)
             html = resp.get_data(as_text=True)
             self.assertIn("Create a user", html)
+
 
     def test_create_new_user(self):
         """Test creating a new user"""
@@ -89,15 +92,25 @@ class UserViewTestCase(TestCase):
             self.assertEqual(jw.last_name, "Wick")
             self.assertEqual(jw.image_url, f"{DEFAULT_IMAGE_URL}")
 
+
     def test_show_user_detail(self):
         """Test display the user detail page"""
 
         with self.client as c:
-            first_user = db.session.query(User).first()
-            first_user_id = first_user.id
-            resp = c.get(f"/users/{first_user_id}")
+            resp = c.get(f"/users/{self.user_id}")
             self.assertEqual(resp.status_code, 200)
             html = resp.get_data(as_text=True)
             self.assertIn("<!-- Test: user detail page -->", html)
             self.assertIn("test1_first", html)
             self.assertIn("test1_last", html)
+
+
+    def test_user_edt_page(self):
+        """Test user edit page is displayed"""
+
+        with self.client as c:
+            resp = c.get(f"/users/{self.user_id}/edit")
+            self.assertEqual(resp.status_code, 200)
+            html = resp.get_data(as_text=True)
+            self.assertIn("test1_first", html)
+            self.assertIn("<h1>Edit a user</h1>", html)
