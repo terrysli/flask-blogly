@@ -21,12 +21,14 @@ connect_db(app)
 
 @app.get("/")
 def homepage():
+    """Redirect to users list"""
 
     return redirect("/users")
 
 
 @app.get("/users")
 def show_users():
+    """Show list of users"""
 
     users = User.get_all_users()
 
@@ -35,12 +37,14 @@ def show_users():
 
 @app.get("/users/new")
 def show_add_user_form():
+    """Show page with form to create new user"""
 
     return render_template("/new_user.html")
 
 
 @app.post("/users/new")
 def handle_add_user():
+    """Process new user request"""
 
     first_name = request.form['first-name-input']
     last_name = request.form['last-name-input']
@@ -56,7 +60,10 @@ def handle_add_user():
 
 @app.get("/users/<int:user_id>")
 def show_user_detail(user_id):
+    """Show page with user details"""
+
     user = db.session.query(User).get(user_id)
+    print("TEST user", user)
 
     first_name = user.first_name
     last_name = user.last_name
