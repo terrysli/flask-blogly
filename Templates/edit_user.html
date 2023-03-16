@@ -6,17 +6,24 @@
 
 <h1>Edit a user</h1>
 
-<form action="/users/{{ user.user_id }}/edit" method = "post">
-  <label for="first-name-input">First Name</label>
-  <input name="first-name-input" value="{{user.first_name}}">
+<form action="/users/{{ user.id }}/edit" method = "POST">
 
-  <label for="last-name-input">Last Name</label>
-  <input name = "last-name-input" value="{{user.last_name}}">
+  <p>
+    <label for="first-name-input">First Name</label>
+    <input name="first-name-input" value="{{user.first_name}}">
+  </p>
 
-  <label for="image-url-input">Image URL</label>
-  <input name = "image-url-input" value="{{user.image_url}}">
+  <p>
+    <label for="last-name-input">Last Name</label>
+    <input name = "last-name-input" value="{{user.last_name}}">
+  </p>
 
-  <a href="/users/{{ user.user_id }}"><button>Cancel</button></a>
+  <p>
+    <label for="image-url-input">Image URL</label>
+    <input name = "image-url-input" value="{{user.image_url}}">
+  </p>
+
+  <a href="/users/{{ user.id }}"><button>Cancel</button></a>
   <button type="submit">Save</button>
 </form>
 

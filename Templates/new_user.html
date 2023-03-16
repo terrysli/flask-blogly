@@ -7,16 +7,24 @@
 <h1>Create a user</h1>
 
 <form action="/users/new" method = "post">
-  <label for="first-name-input">First Name</label>
-  <input name="first-name-input" placeholder="Enter a first name">
 
-  <label for="last-name-input">Last Name</label>
-  <input name = "last-name-input" placeholder="Enter a last name">
+  <p>
+    <label for="first-name-input">First Name</label>
+    <input name="first-name-input" placeholder="Enter a first name">
+  </p>
 
-  <label for="image-url-input">Image URL</label>
-  <input name = "image-url-input" placeholder="Provide an image of this user">
+  <p>
+    <label for="last-name-input">Last Name</label>
+    <input name = "last-name-input" placeholder="Enter a last name">
+  </p>
+
+  <p>
+    <label for="image-url-input">Image URL</label>
+    <input name = "image-url-input" placeholder="Provide an image of this user">
+  </p>
+
   <button type="submit">Add</button>
-</form>
 
+</form>
 
 {% endblock %}

@@ -5,8 +5,6 @@ import os
 from flask import Flask, redirect, render_template, request
 from flask_debugtoolbar import DebugToolbarExtension
 from models import db, connect_db, User
-from sqlalchemy import update
-#delete above import
 
 
 app = Flask(__name__)
@@ -49,8 +47,10 @@ def handle_add_user():
 
     first_name = request.form['first-name-input']
     last_name = request.form['last-name-input']
-    image_url = request.form['image-url-input']
-    #implement conditional logic to catch empty string
+    image_url = (request.form['image-url-input']
+        if request.form['image-url-input']
+        else None)
+
     new_user = User(first_name=first_name, last_name=last_name, image_url=image_url)
 
     db.session.add(new_user)
@@ -62,8 +62,8 @@ def handle_add_user():
 @app.get("/users/<int:user_id>")
 def show_user_detail(user_id):
     """Show page with user details"""
-    #implement get or 404 below
-    user = db.session.query(User).get(user_id)
+
+    user = db.session.query(User).get_or_404(user_id)
     print("TEST user", user)
 
     first_name = user.first_name
@@ -81,12 +81,13 @@ def show_user_detail(user_id):
 @app.get("/users/<int:user_id>/edit")
 def show_edit_user(user_id):
     """Show page with user edit"""
-    #get or 404
-    user = db.session.query(User).get(user_id)
+
+    user = db.session.query(User).get_or_404(user_id)
 
     return render_template(
         "edit_user.html",
-        user=user)
+        user=user
+    )
 
 
 @app.post("/users/<int:user_id>/edit")
@@ -102,7 +103,6 @@ def edit_user(user_id):
     db.session.commit()
 
     return redirect('/users')
-
 
 @app.post("/users/<int:user_id>/delete")
 def delete_user(user_id):

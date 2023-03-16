@@ -33,10 +33,10 @@ class User(db.Model):
         db.String(50),
         nullable = False
     )
-#consider making this nullabe =false
+
     image_url = db.Column(
         db.String(100),
-        nullable = True,
+        nullable = False,
         default = DEFAULT_IMAGE_URL
     )
 
@@ -45,3 +45,35 @@ class User(db.Model):
         """Returns a list of all User instances"""
 
         return User.query.all()
+
+
+class Post(db.Model):
+    """Class to contain blog post info"""
+
+    __tablename__ = "posts"
+
+    id = db.Column(
+        db.Integer,
+        primary_key = True,
+        autoincrement = True
+    )
+
+    title = db.Column(
+        db.String(50),
+        nullable = False
+    )
+
+    content = db.Column(
+        db.Text,
+        nullable = False
+    )
+
+    created_at = db.Column(
+        db.DateTime,
+        nullable = False
+    )
+
+    user_id = db.Column(
+        db.Integer,
+        db.ForeignKey("users.id")
+    )
