@@ -105,7 +105,7 @@ class UserViewTestCase(TestCase):
             self.assertIn("test1_last", html)
 
 
-    def test_user_edt_page(self):
+    def test_user_edit_page(self):
         """Test user edit page is displayed"""
 
         with self.client as c:

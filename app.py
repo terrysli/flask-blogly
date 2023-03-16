@@ -14,7 +14,6 @@ app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get(
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_ECHO'] = True
 
-debug = DebugToolbarExtension(app)
 
 connect_db(app)
 
@@ -143,6 +142,7 @@ def handle_add_form(user_id):
 
 @app.get('/posts/<int:post_id>')
 def show_post(post_id):
+    """Show post on page"""
 
     post = db.session.query(Post).get(post_id)
 
@@ -151,8 +151,34 @@ def show_post(post_id):
 
 @app.get('/posts/<int:post_id>/edit')
 def show_post_edit_form(post_id):
+    """Show page with edit post form"""
 
     post = db.session.query(Post).get(post_id)
 
     return render_template('edit_post.html', post=post)
 
+
+@app.post("/posts/<int:post_id>/edit")
+def edit_post(post_id):
+    """Process edit to post and redirect to post detail page"""
+
+    post = db.session.query(Post).get(post_id)
+
+    post.title = request.form['title-input']
+    post.content = request.form['content-input']
+
+    db.session.commit()
+
+    return redirect(f"/posts/{post_id}")
+
+@app.post("/posts/<int:post_id>/delete")
+def delete_post(post_id):
+    """Delete post"""
+
+    post = db.session.query(Post).get(post_id)
+    author_id = post.author.id
+
+    db.session.query(Post).filter_by(id=post_id).delete()
+    db.session.commit()
+
+    return redirect(f"/users/{author_id}")

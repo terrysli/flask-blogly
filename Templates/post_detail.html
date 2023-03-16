@@ -6,13 +6,15 @@
 
 <h1>{{ post.title }}</h1>
 
-{{ post.content }}
+<p>
+  {{ post.content }}
+</p>
 
 <i>By {{ post.author.first_name }} {{ post.author.last_name }}</i>
 
 <form>
   <button
-    formaction="/users/{{ user_id }}"
+    formaction="/users/{{ post.author.id }}"
     formmethod="GET"
     type="submit">
     Cancel
