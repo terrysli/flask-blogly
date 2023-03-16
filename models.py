@@ -40,6 +40,8 @@ class User(db.Model):
         default = DEFAULT_IMAGE_URL
     )
 
+    posts = db.relationship("Post", backref="author")
+
     @classmethod
     def get_all_users(cls):
         """Returns a list of all User instances"""
@@ -49,6 +51,7 @@ class User(db.Model):
 
 class Post(db.Model):
     """Class to contain blog post info"""
+    """Backref to User is 'author'"""
 
     __tablename__ = "posts"
 
@@ -70,7 +73,8 @@ class Post(db.Model):
 
     created_at = db.Column(
         db.DateTime,
-        nullable = False
+        nullable = False,
+        default = db.func.now()
     )
 
     user_id = db.Column(

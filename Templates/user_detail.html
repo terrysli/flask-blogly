@@ -8,36 +8,45 @@
 
 <div class="row">
   <div class="column">
-    <img src="{{ image_url }}">
+    <img src="{{ user.image_url }}">
   </div>
 
   <div class="column">
-    <h1>{{ first_name }} {{ last_name }}</h1>
+    <h1>{{ user.first_name }} {{ user.last_name }}</h1>
 
     <form>
       <button
-        formaction="/users/{{ user_id }}/edit"
+        formaction="/users/{{ user.id }}/edit"
         formmethod="GET"
         type="submit">
         Edit
       </button>
 
       <button
-        formaction="/users/{{ user_id }}/delete"
+        formaction="/users/{{ user.id }}/delete"
         formmethod="POST"
         type="submit">
         Delete
       </button>
+
     </form>
 
     <h2>Posts</h2>
 
     <ul class="post-list">
       {% for post in posts %}
-        <li><a href="#">{{ post.title }}</a></li>
+      <li><a href="/posts/{{ post.id }}">{{ post.title }}</a></li>
       {% endfor %}
     </ul>
 
+<form>
+    <button
+    formaction="/users/{{ user.id }}/posts/new"
+    formmethod="GET"
+    type="submit">
+    Add Post
+  </button>
+</form>
   </div>
 </div>
 
