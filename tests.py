@@ -36,6 +36,7 @@ class UserViewTestCase(TestCase):
 
         self.client = app.test_client()
 
+
         test_user = User(
             first_name="test1_first",
             last_name="test1_last",
@@ -45,13 +46,22 @@ class UserViewTestCase(TestCase):
         db.session.add(test_user)
         db.session.commit()
 
-
         # We can hold onto our test_user's id by attaching it to self (which is
         # accessible throughout this test class). This way, we'll be able to
         # rely on this user in our tests without needing to know the numeric
         # value of their id, since it will change each time our tests are run.
         self.user_id = test_user.id
 
+
+        test_post = Post(
+            title="Test Title",
+            content="Test content",
+            user_id=test_user.id,
+            created_at=None
+        )
+
+        db.session.add(test_post)
+        db.session.commit()
 
     def tearDown(self):
         """Clean up any fouled transaction."""
@@ -140,6 +150,8 @@ class UserViewTestCase(TestCase):
     def test_delete_user(self):
         """Test deleting a user"""
 
+        Post.query.delete()
+
         with self.client as c:
             resp = c.post(f"/users/{self.user_id}/delete")
 
@@ -165,30 +177,67 @@ class UserViewTestCase(TestCase):
             resp = c.post(
                 f"/users/{self.user_id}/posts/new",
                 data={
-                "title-input": "Test title",
-                "content-input": "Test content"
+                "title-input": "Hai",
+                "content-input": "Hello world!"
                 }
             )
             self.assertEqual(resp.status_code, 302)
-            test_post = Post.query.filter_by(title="Test title").one_or_none()
-            self.assertEqual(test_post.content, "Test content")
+            test_post = Post.query.filter_by(title="Hai").one_or_none()
+            self.assertEqual(test_post.content, "Hello world!")
 
 
-###TEST BELOW NOT WORKING YET###
+    def test_show_post(self):
+        """Test showing post on page"""
 
-    # def test_show_post(self):
-    #     """Test show post on page"""
+        first_post_id = Post.query.first().id
 
-    #     with self.client as c:
-    #         resp = c.post(
-    #             f"/users/{self.user_id}/posts/new",
-    #             data={
-    #             "title-input": "Test title",
-    #             "content-input": "Test content"
-    #             }
-    #         )
-    #         resp2 = c.get("/posts/1")
-    #         html = resp2.get_data(as_text=True)
-    #         # print("00000000000000000", html)
-    #         self.assertEqual(resp2.status_code, 200)
-    #         self.assertIn("Post Detail", html)
+        with self.client as c:
+            resp = c.get(f"/posts/{first_post_id}")
+            html = resp.get_data(as_text=True)
+            self.assertEqual(resp.status_code, 200)
+            self.assertIn("Post Detail", html)
+
+
+    def test_show_edit_post(self):
+        """Test showing edit post form"""
+
+        first_post_id = Post.query.first().id
+
+        with self.client as c:
+            resp = c.get(f"/posts/{first_post_id}/edit")
+            html = resp.get_data(as_text=True)
+            self.assertEqual(resp.status_code, 200)
+            self.assertIn("Edit Post", html)
+
+
+    def test_edit_post(self):
+        """Test editing a post in db"""
+
+        first_post_id = Post.query.first().id
+
+        with self.client as c:
+            resp = c.post(
+                f"posts/{first_post_id}/edit",
+                data={
+                    "title-input": "Edited Title",
+                    "content-input": "Edited content",
+                })
+
+        post = Post.query.get(first_post_id)
+        self.assertEqual(resp.status_code, 302)
+        self.assertEqual(post.title, "Edited Title")
+        self.assertEqual(post.content, "Edited content")
+
+    def test_delete_post(self):
+        """Test deleting a post from db"""
+
+        first_post_id = Post.query.first().id
+
+        with self.client as c:
+            resp = c.post(
+                f"/posts/{first_post_id}/delete",
+                follow_redirects=True)
+            self.assertEqual(resp.status_code, 200)
+            self.assertEqual(len(Post.query.all()), 0)
+
+

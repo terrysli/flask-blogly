@@ -137,7 +137,6 @@ def handle_add_form(user_id):
 
     db.session.add(new_post)
     db.session.commit()
-    print("*** ALL POSTS *** : ", db.session.query(Post).all())
 
     return redirect(f'/users/{user_id}')
 
