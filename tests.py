@@ -45,11 +45,13 @@ class UserViewTestCase(TestCase):
         db.session.add(test_user)
         db.session.commit()
 
+
         # We can hold onto our test_user's id by attaching it to self (which is
         # accessible throughout this test class). This way, we'll be able to
         # rely on this user in our tests without needing to know the numeric
         # value of their id, since it will change each time our tests are run.
         self.user_id = test_user.id
+
 
     def tearDown(self):
         """Clean up any fouled transaction."""
@@ -171,3 +173,22 @@ class UserViewTestCase(TestCase):
             test_post = Post.query.filter_by(title="Test title").one_or_none()
             self.assertEqual(test_post.content, "Test content")
 
+
+###TEST BELOW NOT WORKING YET###
+
+    # def test_show_post(self):
+    #     """Test show post on page"""
+
+    #     with self.client as c:
+    #         resp = c.post(
+    #             f"/users/{self.user_id}/posts/new",
+    #             data={
+    #             "title-input": "Test title",
+    #             "content-input": "Test content"
+    #             }
+    #         )
+    #         resp2 = c.get("/posts/1")
+    #         html = resp2.get_data(as_text=True)
+    #         # print("00000000000000000", html)
+    #         self.assertEqual(resp2.status_code, 200)
+    #         self.assertIn("Post Detail", html)

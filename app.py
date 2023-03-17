@@ -129,17 +129,11 @@ def handle_add_form(user_id):
     title = request.form["title-input"]
     content = request.form["content-input"]
 
-    print("title",title,"content",content)
-
     new_post = Post(
         title=title,
         content=content,
         user_id=user_id,
         created_at=None)
-
-    print("""#########################
-          new_post: ""","title",new_post.title,"user_id", new_post.user_id,
-          "created_at", new_post.created_at)
 
     db.session.add(new_post)
     db.session.commit()
