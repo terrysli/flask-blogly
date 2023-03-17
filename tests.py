@@ -5,7 +5,7 @@ os.environ["DATABASE_URL"] = "postgresql:///blogly_test"
 from unittest import TestCase
 
 from app import app, db
-from models import DEFAULT_IMAGE_URL, User
+from models import DEFAULT_IMAGE_URL, User, Post
 
 # Make Flask errors be real errors, rather than HTML pages with error info
 app.config['TESTING'] = True
@@ -26,6 +26,8 @@ class UserViewTestCase(TestCase):
 
     def setUp(self):
         """Create test client, add sample data."""
+
+        Post.query.delete()
 
         # As you add more models later in the exercise, you'll want to delete
         # all of their records before each test just as we're doing with the
@@ -88,7 +90,7 @@ class UserViewTestCase(TestCase):
                 }
             )
             self.assertEqual(resp.status_code, 302)
-            jw = db.session.query(User).filter_by(first_name="John").one_or_none()
+            jw = User.query.filter_by(first_name="John").one_or_none()
             self.assertEqual(jw.last_name, "Wick")
             self.assertEqual(jw.image_url, f"{DEFAULT_IMAGE_URL}")
 
@@ -114,3 +116,58 @@ class UserViewTestCase(TestCase):
             html = resp.get_data(as_text=True)
             self.assertIn("test1_first", html)
             self.assertIn("<h1>Edit a user</h1>", html)
+
+
+    def test_edit_user(self):
+        """Test handling edit user"""
+
+        with self.client as c:
+            resp = c.post(
+                f"users/{self.user_id}/edit",
+                data={
+                    "first-name-input": "changed_first",
+                    "last-name-input": "changed_last",
+                    "image-url-input": ""
+                })
+            user = db.session.query(User).get(self.user_id)
+            self.assertEqual(user.first_name, "changed_first")
+            self.assertEqual(user.last_name, "changed_last")
+            self.assertEqual(user.image_url, DEFAULT_IMAGE_URL)
+
+
+    def test_delete_user(self):
+        """Test deleting a user"""
+
+        with self.client as c:
+            resp = c.post(f"/users/{self.user_id}/delete")
+
+            self.assertEqual(len(User.query.all()), 0)
+
+
+    """TESTS FOR BLOG POST ROUTES"""
+
+    def test_add_post_form(self):
+        """Test displaying the add post form"""
+
+        with self.client as c:
+            resp = c.get(f"/users/{self.user_id}/posts/new")
+            self.assertEqual(resp.status_code, 200)
+            html = resp.get_data(as_text=True)
+            self.assertIn("Add Post for", html)
+
+
+    def test_handle_add_form(self):
+        """Test adding post to db"""
+
+        with self.client as c:
+            resp = c.post(
+                f"/users/{self.user_id}/posts/new",
+                data={
+                "title-input": "Test title",
+                "content-input": "Test content"
+                }
+            )
+            self.assertEqual(resp.status_code, 302)
+            test_post = Post.query.filter_by(title="Test title").one_or_none()
+            self.assertEqual(test_post.content, "Test content")
+

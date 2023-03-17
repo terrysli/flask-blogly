@@ -4,7 +4,7 @@ import os
 
 from flask import Flask, redirect, render_template, request
 from flask_debugtoolbar import DebugToolbarExtension
-from models import db, connect_db, User, Post
+from models import db, connect_db, User, Post, DEFAULT_IMAGE_URL
 
 
 app = Flask(__name__)
@@ -92,7 +92,9 @@ def edit_user(user_id):
 
     user.first_name = request.form['first-name-input']
     user.last_name = request.form['last-name-input']
-    user.image_url = request.form['image-url-input']
+    user.image_url = (request.form['image-url-input']
+        if request.form['image-url-input']
+        else DEFAULT_IMAGE_URL)
 
     db.session.commit()
 
@@ -127,15 +129,21 @@ def handle_add_form(user_id):
     title = request.form["title-input"]
     content = request.form["content-input"]
 
+    print("title",title,"content",content)
+
     new_post = Post(
         title=title,
         content=content,
         user_id=user_id,
         created_at=None)
 
+    print("""#########################
+          new_post: ""","title",new_post.title,"user_id", new_post.user_id,
+          "created_at", new_post.created_at)
 
     db.session.add(new_post)
     db.session.commit()
+    print("*** ALL POSTS *** : ", db.session.query(Post).all())
 
     return redirect(f'/users/{user_id}')
 
