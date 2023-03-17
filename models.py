@@ -40,13 +40,20 @@ class User(db.Model):
         default = DEFAULT_IMAGE_URL
     )
 
+    @property
+    def full_name(self):
+        """The full name (first_name, last_name) of User"""
+        return self.first_name + " " + self.last_name
+
+
     posts = db.relationship("Post", backref="author")
 
     @classmethod
     def get_all_users(cls):
-        """Returns a list of all User instances"""
+        """Returns a list of all User instances in alphabetical
+        order by last name then first name"""
 
-        return User.query.all()
+        return User.query.order_by("last_name", "first_name").all()
 
 
 class Post(db.Model):
